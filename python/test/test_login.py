@@ -1,10 +1,11 @@
-""" Unit tests for the api module. """
+""" Unit tests for the login module. """
 import unittest
-from api.methods import Token, Restricted
+from api.login import Token, Restricted
 
-TOKEN = """eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.
-    eyJyb2xlIjoiYWRtaW4ifQ.
-    BmcZ8aB5j8wLSK8CqdDwkGxZfFwM1X1gfAIN7cXOx9w"""
+TOKEN = ("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9."
+        "eyJyb2xlIjoiYWRtaW4ifQ."
+        "BmcZ8aB5j8wLSK8CqdDwkGxZfFwM1X1gfAIN7cXOx9w"
+        )
 
 class TestApiMethods(unittest.TestCase):
     """ Tests for api methods. """
@@ -15,16 +16,11 @@ class TestApiMethods(unittest.TestCase):
 
     def test_generate_token(self):
         """ Test the generation of the token. """
-        username = ""
-        password = "X"
-        user_salt = "X"
-        user_password = "X"
-        user_role = "X"
-
-        query_data = [user_salt, user_password, user_role]
+        username = "admin"
+        password = "secret"
 
         self.assertEqual(TOKEN, self.convert.generate_token(
-            username, password, query_data))
+            username, password))
 
     def test_access_data(self):
         """ Test the access to the protected data. """
