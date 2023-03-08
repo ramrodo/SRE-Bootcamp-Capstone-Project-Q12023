@@ -37,19 +37,20 @@ class Restricted:
 
     def access_data(self, authorization):
         """ Verifies and authorize the access to the data. """
-        try:
-            bearer_token = authorization.replace("Bearer", "").strip()
-            data_decoded = jwt.decode(
-                bearer_token,
-                db_conn.get_encrypt_token(),
-                algorithms=["HS256"],
-            )
-        except jwt.ExpiredSignatureError as expired_signature_error:
-            return expired_signature_error
-        except jwt.DecodeError as decode_error:
-            return decode_error
+        if authorization:
+            try:
+                bearer_token = authorization.replace("Bearer", "").strip()
+                data_decoded = jwt.decode(
+                    bearer_token,
+                    db_conn.get_encrypt_token(),
+                    algorithms=["HS256"],
+                )
+            except jwt.ExpiredSignatureError as expired_signature_error:
+                return expired_signature_error
+            except jwt.DecodeError as decode_error:
+                return decode_error
 
-        if "role" in data_decoded:
-            return "You are under protected data"
+            if "role" in data_decoded:
+                return "You are under protected data"
 
-        return "You are not allowed"
+        return ""
