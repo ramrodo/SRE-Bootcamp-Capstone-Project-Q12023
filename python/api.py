@@ -1,6 +1,6 @@
 """ Module to define routes for the API client. """
 from flask import Flask, request, jsonify, abort
-from api.networking import CidrMaskConvert, IpValidate
+from api.convert import CidrMaskConvert, IpValidate
 from api.login import Token, Restricted
 
 app = Flask(__name__)

@@ -1,4 +1,4 @@
-""" Classes for networking module. """
+""" Classes for convert module. """
 from socket import inet_ntoa
 from struct import pack
 from ipaddress import ip_address
