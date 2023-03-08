@@ -28,4 +28,4 @@ EXPOSE 8000
 
 ENV PATH="/venv/bin:$PATH"
 
-CMD ["python3", "app.py"]
+CMD ["python3", "api.py"]
