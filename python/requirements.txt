@@ -1,3 +1,5 @@
 Flask
 mysql-connector-python
-pyjwt
+PyJWT==2.4.0
+autopep8
+pylint

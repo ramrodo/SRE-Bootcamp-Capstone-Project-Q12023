@@ -1,8 +1,7 @@
-from flask import *   
-from convert import *  
-from methods import *  
-from convert import *
-import mysql.connector
+""" Module to define routes for the API client. """
+from flask import Flask, request, jsonify, abort
+from api.convert import CidrMaskConvert, IpValidate
+from api.login import Token, Restricted
 
 app = Flask(__name__)
 login = Token()
@@ -11,54 +10,74 @@ convert = CidrMaskConvert()
 validate = IpValidate()
 
 
-# Just a health check
 @app.route("/")
-def urlRoot():  
+def url_root():
+    """ Root endpoint that returns a single OK message. """
     return "OK"
-# Just a health check
-@app.route("/_health")
-def urlHealth():
-    return "OK"  
-# e.g. http://127.0.0.1:8000/login
-@app.route("/login", methods=['POST'])
-def urlLogin():
-    var1 = request.form['username']
-    var2 = request.form['password']
-    # This database data is here just for you to test, please, remember to define your own DB
-    # You can test with username = admin, password = secret  
-    # This DB has already a best practice: a salt value to store the passwords
-    con = mysql.connector.connect(
-        host='sre-bootcamp-selection-challenge.cabf3yhjqvmq.us-east-1.rds.amazonaws.com',
-        user='secret',
-        password='jOdznoyH6swQB9sTGdLUeeSrtejWkcw',
-        database='bootcamp_tht'  
-    )
-    cursor=con.cursor()
-    cursor.execute(f"SELECT salt, password, role from users where username ='{var1}';")
-    Query= cursor.fetchall()
-    var3 = login.generateToken(var1, var2, Query)
-    if var3 is not False:
-        r = {"data": var3}
-        return jsonify(r)
-    abort(401)  
-# e.g. http://127.0.0.1:8000/cidr-to-mask?value=8
-@app.route("/cidr-to-mask")
-def urlCidrToMask():
-    var1 = request.headers.get('Authorization')
-    if not protected.access_Data(var1):
-        abort(401)   
-    val = request.args.get('value')
-    r = {"function": "cidrToMask","input": val,"output": convert.cidr_to_mask(val), }
-    return jsonify(r)  
-# # e.g. http://127.0.0.1:8000/mask-to-cidr?value=255.0.0.0
-@app.route("/mask-to-cidr")
-def urlMaskToCidr():  
-    var1 = request.headers.get('Authorization')
-    if not protected.access_Data(var1):
-        abort(401) 
-    val = request.args.get('value')
-    r = { "function": "maskToCidr","input": val,"output": convert.mask_to_cidr(val),}
-    return jsonify(r)
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8000)
 
+@app.route("/_health")
+def url_health():
+    """ Health endpoint that returns a single OK message. """
+    return "OK"
+
+@app.route("/login", methods=["POST"])
+def url_login():
+    """ Login endpoint that authenticates a user.
+        Form fields:
+            - username: String
+            - password: String
+
+        Example: http://127.0.0.1:8000/login
+    """
+    username = request.form["username"]
+    password = request.form["password"]
+    res = {
+        "data": login.generate_token(username, password)
+    }
+    return jsonify(res)
+
+@app.route("/cidr-to-mask")
+def url_cidr_to_mask():
+    """ Endpoint that verifies the authorization token and returns the mask from the CIDR given.
+        Args:
+            - value: String
+
+        Example: http://127.0.0.1:8000/cidr-to-mask?value=8
+    """
+    authorization_token = request.headers.get("Authorization")
+    if not protected.access_data(authorization_token):
+        abort(401)
+
+    cidr = request.args.get("value")
+
+    response = {
+        "function": "cidrToMask",
+        "input": cidr,
+        "output": convert.cidr_to_mask(cidr)
+    }
+
+    return jsonify(response)
+
+@app.route("/mask-to-cidr")
+def url_mask_to_cidr():
+    """ Endpoint that verifies the authorization token and returns the CIDR from the mask given.
+        Args:
+            - value: String
+
+        Example: http://127.0.0.1:8000/mask-to-cidr?value=255.0.0.0
+    """
+    token = request.headers.get("Authorization")
+    if not protected.access_data(token):
+        abort(401)
+    mask = request.args.get("value")
+
+    response = {
+        "function": "maskToCidr",
+        "input": mask,
+        "output": convert.mask_to_cidr(mask)
+    }
+
+    return jsonify(response)
+
+if __name__ == "__main__":
+    app.run(debug = True, host = "0.0.0.0", port = 8000)
