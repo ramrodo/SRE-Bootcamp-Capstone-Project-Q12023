@@ -1,10 +1,10 @@
 """ Module for DB connections. """
 from mysql.connector import connect, Error
 
-HOST = "sre-bootcamp.czdpg2eovfhn.us-west-1.rds.amazonaws.com"
-DATABASE = "bootcamp_tht"
-USER = "secret"
-PASSWORD = "jOdznoyH6swQB9sTGdLUeeSrtejWkcw"
+HOST = "capstone-db-public.crupwggs3ofp.us-west-2.rds.amazonaws.com"
+DATABASE = "capstone_db_public"
+USER = "admin"
+PASSWORD = "mwn0cbq6rxw0MHM*zrc"
 ENCRYPT_TOKEN = "my2w7wjd7yXF64FIADfJxNs1oupTGAuW"
 
 class Database():
@@ -19,7 +19,6 @@ class Database():
             )
             self.cursor = self.conn.cursor()
             self.encrypt_token = ENCRYPT_TOKEN
-            print("Database connected!")
         except Error as error:
             print("Error connecting to Database:", error)
 

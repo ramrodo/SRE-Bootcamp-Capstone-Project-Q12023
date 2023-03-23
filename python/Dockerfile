@@ -1,32 +1,10 @@
-# ramrodo/academy-sre-bootcamp-rodolfo-martinez
-# Build
-FROM python:3.11-slim AS build
+FROM public.ecr.aws/lambda/python:3.9
 
-RUN apt-get update && \
-    apt-get install --no-install-suggests --no-install-recommends --yes python3-venv gcc libpython3-dev && \
-    python3 -m venv --copies /venv && \
-    /venv/bin/pip install --upgrade pip setuptools wheel
+COPY requirements.txt .
 
-# Build the virtualenv as a separate step: Only re-execute this step when requirements.txt changes
-FROM build AS build-venv
+RUN pip install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
-COPY requirements.txt /requirements.txt
+COPY . ${LAMBDA_TASK_ROOT}
 
-ENV PATH="venv/bin:$PATH"
-
-RUN pip install -r /requirements.txt
-
-# Final stage
-
-FROM python:3.11-slim
-
-COPY --from=build-venv /venv /venv
-COPY . /app
-
-WORKDIR /app
-
-EXPOSE 8000
-
-ENV PATH="/venv/bin:$PATH"
-
-CMD ["python3", "api.py"]
+CMD [ "capstone.handler" ]
+#CMD [ "gunicorn", "--bind", "0.0.0.0:80", "wsgi:app" ]

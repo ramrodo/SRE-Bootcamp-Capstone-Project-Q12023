@@ -1,15 +1,19 @@
 """ Methods for login module. """
 import hashlib
 import jwt
+from mysql.connector import Error
 from api.db import Database
-
-db_conn = Database()
 
 class Token:
     """ Class to handle the token for authentication. """
 
     def generate_token(self, username, password):
         """ Generates a JWT token with the data given. """
+        try:
+            db_conn = Database()
+        except Error as error:
+            print("Error connecting to Database:", error)
+
         query_data = db_conn.get_user(username)
         query_password_hashed = query_data[1]
         query_salt = query_data[2]
@@ -40,6 +44,9 @@ class Restricted:
         if authorization:
             try:
                 bearer_token = authorization.replace("Bearer", "").strip()
+
+                db_conn = Database()
+
                 data_decoded = jwt.decode(
                     bearer_token,
                     db_conn.get_encrypt_token(),

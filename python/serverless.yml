@@ -1,0 +1,28 @@
+service: capstone-api-2
+
+provider:
+  name: aws
+  stage: dev
+  region: us-west-2
+  vpc:
+    securityGroupIds:
+      - sg-03b602a8f6170372c
+    subnetIds:
+      - subnet-34c72d4c
+      - subnet-fa4156b1
+  ecr:
+    images:
+      capstone-api:
+        uri: 381893098505.dkr.ecr.us-west-2.amazonaws.com/capstone-api:lambda-python
+
+functions:
+  app:
+    image:
+      name: capstone-api
+      command:
+        - capstone.handler
+        #- flag
+      #entryPoint:
+        #- executable
+        #- flag
+    timeout: 30

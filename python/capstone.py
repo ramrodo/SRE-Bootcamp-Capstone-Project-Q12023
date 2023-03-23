@@ -1,13 +1,10 @@
 """ Module to define routes for the API client. """
+import serverless_wsgi
 from flask import Flask, request, jsonify, abort
-from api.convert import CidrMaskConvert, IpValidate
+from api.convert import CidrMaskConvert
 from api.login import Token, Restricted
 
 app = Flask(__name__)
-login = Token()
-protected = Restricted()
-convert = CidrMaskConvert()
-validate = IpValidate()
 
 
 @app.route("/")
@@ -31,6 +28,9 @@ def url_login():
     """
     username = request.form["username"]
     password = request.form["password"]
+
+    login = Token()
+
     res = {
         "data": login.generate_token(username, password)
     }
@@ -45,10 +45,15 @@ def url_cidr_to_mask():
         Example: http://127.0.0.1:8000/cidr-to-mask?value=8
     """
     authorization_token = request.headers.get("Authorization")
-    if not protected.access_data(authorization_token):
+
+    protected = Restricted()
+
+    if "You are under protected data" != protected.access_data(authorization_token):
         abort(401)
 
     cidr = request.args.get("value")
+
+    convert = CidrMaskConvert()
 
     response = {
         "function": "cidrToMask",
@@ -67,9 +72,14 @@ def url_mask_to_cidr():
         Example: http://127.0.0.1:8000/mask-to-cidr?value=255.0.0.0
     """
     token = request.headers.get("Authorization")
+
+    protected = Restricted()
+
     if not protected.access_data(token):
         abort(401)
     mask = request.args.get("value")
+
+    convert = CidrMaskConvert()
 
     response = {
         "function": "maskToCidr",
@@ -78,6 +88,12 @@ def url_mask_to_cidr():
     }
 
     return jsonify(response)
+
+
+def handler(event, context):
+    """ Handle for AWS Lambda """
+    return serverless_wsgi.handle_request(app, event, context)
+
 
 if __name__ == "__main__":
     app.run(debug = True, host = "0.0.0.0", port = 8000)
