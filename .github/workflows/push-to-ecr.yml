@@ -24,7 +24,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: arn:aws:iam::$AWS_ACCOUNT_ID:role/github-actions-role
-        aws-region: us-east-2
+        aws-region: $AWS_REGION
 
     - name: Build container image
       run: docker build .
