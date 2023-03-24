@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-python@v3
         name: Set up Python ${{ matrix.python-version }}
         with:
-          python-versoin: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
