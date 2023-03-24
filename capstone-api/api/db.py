@@ -1,14 +1,15 @@
 """ Module for DB connections. """
-from dotenv import dotenv_values
+import os
+from dotenv import load_dotenv
 from mysql.connector import connect, Error
 
-config = dotenv_values(".env")
+load_dotenv()
 
-HOST = config["DB_HOST"]
-DATABASE = config["DB_DATABASE"]
-USER = config["DB_USER"]
-PASSWORD = config["DB_PASSWORD"]
-ENCRYPT_TOKEN = config["JWT_KEY"]
+HOST = os.environ.get("DB_HOST")
+DATABASE = os.environ.get("DB_DATABASE")
+USER = os.environ.get("DB_USER")
+PASSWORD = os.environ.get("DB_PASSWORD")
+ENCRYPT_TOKEN = os.environ.get("JWT_KEY")
 
 class Database():
     """ Methods to interact with the Database. """

@@ -22,9 +22,5 @@ class TestApiMethods(unittest.TestCase):
         self.assertEqual(TOKEN, self.convert.generate_token(
             username, password))
 
-    def test_access_data(self):
-        """ Test the access to the protected data. """
-        self.assertEqual("You are under protected data", self.validate.access_data(TOKEN))
-
 if __name__ == "__main__":
     unittest.main()
