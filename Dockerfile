@@ -10,7 +10,7 @@ RUN apt-get update && \
 # Build the virtualenv as a separate step: Only re-execute this step when requirements.txt changes
 FROM build AS build-venv
 
-COPY requirements.txt /requirements.txt
+COPY capstone-api/requirements.txt /requirements.txt
 
 ENV PATH="venv/bin:$PATH"
 
@@ -21,9 +21,9 @@ RUN pip install -r /requirements.txt
 FROM python:3.11-slim@sha256:d0e839882b87135b355361efeb9e9030c9d2a808da06434f4c99eb4009c15e64
 
 COPY --from=build-venv /venv /venv
-COPY . /app
+COPY capstone-api /capstone-api
 
-WORKDIR /app
+WORKDIR /capstone-api
 
 EXPOSE 80
 
