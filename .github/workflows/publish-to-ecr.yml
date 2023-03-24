@@ -32,7 +32,7 @@ jobs:
 
     - name: Log in to registry
       run: |
-        aws ecr get-login-password --region $AWS_REGION | buildah login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+        docker login -u AWS -p $(aws ecr get-login-password --region $AWS_REGION) $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
     - name: Push image
       run: |
