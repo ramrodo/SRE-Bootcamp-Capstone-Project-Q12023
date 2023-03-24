@@ -18,15 +18,17 @@ RUN pip install -r /requirements.txt
 
 # Final stage
 
-FROM python:3.11-slim
+FROM python:3.11-slim@sha256:d0e839882b87135b355361efeb9e9030c9d2a808da06434f4c99eb4009c15e64
 
 COPY --from=build-venv /venv /venv
 COPY . /app
 
 WORKDIR /app
 
-EXPOSE 8000
+EXPOSE 80
 
 ENV PATH="/venv/bin:$PATH"
 
-CMD ["python3", "api.py"]
+CMD [ "gunicorn", "--bind", "0.0.0.0:80", "wsgi:app" ]
+
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl -f http://localhost:80/_health
