@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/deliver-final # REMOVE ME
 
 permissions:
   id-token: write
