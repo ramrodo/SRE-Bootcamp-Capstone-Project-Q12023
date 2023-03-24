@@ -13,4 +13,3 @@ jobs:
 
     - name: Build container image
       run: docker build .
-      working-directory: "capstone-api"

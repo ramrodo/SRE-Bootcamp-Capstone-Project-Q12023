@@ -28,8 +28,7 @@ jobs:
         aws-region: us-west-2
 
     - name: Build container image
-      run: docker build .
-      working-directory: "capstone-api"
+      run: docker build -t $IMAGE_NAME .
 
     - name: Log in to registry
       run: |
