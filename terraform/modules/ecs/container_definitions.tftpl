@@ -1,0 +1,31 @@
+[
+  {
+    "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": ${awslogs_group},
+            "awslogs-region": ${awslogs_region},
+            "awslogs-stream-prefix": ${awslogs_stream_prefix}
+          }
+        },
+    "dnsSearchDomains":[],
+    "dnsServers":[],
+    "dockerLabels":{},
+    "dockerSecurityOptions":[],
+    "essential":true,
+    "extraHosts":[],
+    "image": "${image}",
+    "links":[],
+    "mountPoints":[],
+    "name": ${app_name},
+    "portMappings":[
+      {
+        "containerPort": ${container_port},
+        "hostPort":${host_port},
+        "protocol":${protocol}
+      }
+    ],
+    "ulimits":[],
+    "volumesFrom":[]
+  }
+]
