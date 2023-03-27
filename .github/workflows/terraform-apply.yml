@@ -1,0 +1,62 @@
+name: terraform-apply
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [publish-to-ecr, terraform-plan]
+    branches: [main, feature/deliver-final] # REMOVE feature/deliver-final
+    types: [completed]
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  id-token: write
+  contents: read # This is required for actions/checkout@v3
+
+
+jobs:
+  tf_apply:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: arn:aws:iam::381893098505:role/github-actions-role
+        aws-region: us-west-2
+
+    - uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.4.2
+        terraform_wrapper: false
+
+    - name: Terraform fmt
+      id: fmt
+      run: terraform fmt -check
+      continue-on-error: true
+      working-directory: "terraform"
+
+    - name: Terraform Init
+      id: init
+      run: |
+        rm -rf .terraform
+        terraform init -upgrade=true -no-color
+      working-directory: "terraform"
+
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate -no-color
+      working-directory: "terraform"
+
+    - name: Terraform Apply
+      id: apply
+      run : terraform apply -auto-approve -input=false -no-color
+      working-directory:  "terraform"
