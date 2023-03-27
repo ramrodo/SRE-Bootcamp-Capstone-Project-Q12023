@@ -5,12 +5,10 @@ on:
     workflows: [publish-to-ecr, terraform-plan]
     branches: [main, feature/deliver-final] # REMOVE feature/deliver-final
     types: [completed]
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
+      - feature/deliver-final # REMOVE feature/deliver-final
 
 defaults:
   run:
