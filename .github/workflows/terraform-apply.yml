@@ -46,7 +46,7 @@ jobs:
       id: init
       run: |
         rm -rf .terraform
-        terraform init -upgrade=true -no-color
+        terraform init --backend-config=backend.tfvars -upgrade=true -no-color
       working-directory: "terraform"
 
     - name: Terraform Validate
