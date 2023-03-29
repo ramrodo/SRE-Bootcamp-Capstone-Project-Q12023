@@ -36,28 +36,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   tags = var.tags
 }
 
-resource "aws_security_group" "ecs_sg" {
-  vpc_id = var.vpc_id
-
-  ingress {
-    description     = "https whitelisted tcp access"
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-  }
-
-  egress {
-    description = "total outbound"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = [
-      "0.0.0.0/0"
-    ]
-  }
-  tags = var.tags
-}
-
 resource "aws_ecs_service" "ecs_service" {
   name            = var.app_name
   cluster         = aws_ecs_cluster.ecs_cluster.id
@@ -66,9 +44,15 @@ resource "aws_ecs_service" "ecs_service" {
   launch_type     = var.launch_type
 
   network_configuration {
-    security_groups  = [aws_security_group.ecs_sg.id]
+    security_groups  = [var.security_group_id]
     subnets          = var.subnets
-    assign_public_ip = false
+    assign_public_ip = true
+  }
+
+  load_balancer {
+    target_group_arn = var.target_group_arn
+    container_name   = var.app_name
+    container_port   = var.container_port
   }
 
   tags = var.tags

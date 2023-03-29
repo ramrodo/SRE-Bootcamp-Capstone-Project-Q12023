@@ -8,24 +8,52 @@ locals {
     env = local.env
   }
 
-  ecs_tags = merge(local.default_tags, {
-    createdby = "rodomar@outlook.com"
+  tags = merge(local.default_tags, {
+    created_by = "rodomar@outlook.com"
     }
   )
 
   ecr_repository = "capstone-api"
-  ecr_image_tag  = "deliver-final"
+  ecr_image_tag  = "latest"
 
   service_port = 80
-  protocol     = "HTTP"
+  protocol     = "http"
   subnets      = ["subnet-34c72d4c", "subnet-fa4156b1", "subnet-0d4f8a50", "subnet-be295595"]
   vpc_id       = "vpc-b272ebca"
+  bucket_logs  = "capstone-api"
+}
+
+module "sg" {
+  source = "./modules/sg"
+
+  vpc_id   = local.vpc_id
+  app_name = local.app_name
+  tags     = local.tags
+}
+
+module "alb" {
+  source = "./modules/alb"
+
+  vpc_id   = local.vpc_id
+  app_name = local.app_name
+
+  bucket_logs = local.bucket_logs
+
+  # Load Balancer Config
+  health_check_path = "/"
+  security_group_id = module.sg.security_group_id
+  subnet_ids        = local.subnets
+
+  depends_on = [
+    module.sg
+  ]
 }
 
 module "ecs" {
-  source         = "./modules/ecs"
+  source = "./modules/ecs"
+
   app_name       = local.app_name
-  tags           = local.ecs_tags
+  tags           = local.tags
   ecr_repository = local.ecr_repository
   ecr_image_tag  = local.ecr_image_tag
 
@@ -35,4 +63,12 @@ module "ecs" {
   protocol              = local.protocol
   subnets               = local.subnets
   vpc_id                = local.vpc_id
+  target_group_arn      = module.alb.target_group_arn
+
+  security_group_id = module.sg.security_group_id
+
+  depends_on = [
+    module.sg,
+    module.alb
+  ]
 }

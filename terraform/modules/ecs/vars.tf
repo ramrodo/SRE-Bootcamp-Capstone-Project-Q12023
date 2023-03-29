@@ -28,12 +28,12 @@ variable "requires_compatibilities" {
 
 variable "taskcpuunit" {
   type    = number
-  default = 256
+  default = 1024
 }
 
 variable "taskmemoryM" {
   type    = number
-  default = 1024
+  default = 3072
 }
 
 variable "awslogs_region" {
@@ -72,5 +72,13 @@ variable "subnets" {
 }
 
 variable "vpc_id" {
+  type = string
+}
+
+variable "target_group_arn" {
+  type = string
+}
+
+variable "security_group_id" {
   type = string
 }

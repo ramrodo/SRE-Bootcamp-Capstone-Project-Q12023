@@ -21,8 +21,9 @@
     "portMappings":[
       {
         "containerPort": ${container_port},
-        "hostPort":${host_port},
-        "protocol":${protocol}
+        "hostPort": ${host_port},
+        "protocol": "tcp",
+        "appProtocol": ${protocol}
       }
     ],
     "ulimits":[],
