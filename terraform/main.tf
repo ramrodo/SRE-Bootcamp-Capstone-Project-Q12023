@@ -42,7 +42,7 @@ module "alb" {
   # Load Balancer Config
   health_check_path = "/"
   security_group_id = module.sg.security_group_id
-  subnet_ids        = local.subnets
+  subnets           = local.subnets
 
   depends_on = [
     module.sg
