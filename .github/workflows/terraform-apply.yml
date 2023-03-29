@@ -3,12 +3,11 @@ on:
   workflow_dispatch:
   workflow_run:
     workflows: [publish-to-ecr, terraform-plan]
-    branches: [main, feature/deliver-final] # REMOVE feature/deliver-final
+    branches: [main]
     types: [completed]
   push:
     branches:
       - main
-      - feature/deliver-final # REMOVE feature/deliver-final
 
 defaults:
   run:
