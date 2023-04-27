@@ -4,7 +4,7 @@ on:
   push:
 
 jobs:
-  lint:
+  pylint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -27,3 +27,19 @@ jobs:
       - name: Run pylint
         run: pylint --recursive=y .
         working-directory: "capstone-api"
+
+  tf_fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout source code
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.2
+          terraform_wrapper: false
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        working-directory: "terraform"
