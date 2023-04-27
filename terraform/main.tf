@@ -19,7 +19,7 @@ locals {
   service_port = 80
   protocol     = "http"
   subnets      = ["subnet-34c72d4c", "subnet-fa4156b1", "subnet-0d4f8a50", "subnet-be295595"]
-  bucket_logs = "capstone-api"
+  bucket_logs  = "capstone-api"
 }
 
 module "vpc" {
