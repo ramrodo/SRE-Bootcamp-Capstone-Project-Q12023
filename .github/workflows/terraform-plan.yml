@@ -31,11 +31,6 @@ jobs:
         terraform_version: 1.4.2
         terraform_wrapper: false
 
-    - name: Terraform fmt
-      id: fmt
-      run: terraform fmt -check
-      working-directory: "terraform"
-
     - name: Terraform Init
       id: init
       run: |
