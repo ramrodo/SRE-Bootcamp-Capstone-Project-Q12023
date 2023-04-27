@@ -14,27 +14,37 @@ locals {
   )
 
   ecr_repository = "capstone-api"
-  ecr_image_tag  = "latest"
+  ecr_image_tag  = "latest" # Update this "-v" key & value. From workflow where I'm building the Docker
 
   service_port = 80
   protocol     = "http"
   subnets      = ["subnet-34c72d4c", "subnet-fa4156b1", "subnet-0d4f8a50", "subnet-be295595"]
-  vpc_id       = "vpc-b272ebca"
-  bucket_logs  = "capstone-api"
+  bucket_logs = "capstone-api"
+}
+
+module "vpc" {
+  source = "./modules/vpc"
+
+  region   = local.region
+  app_name = local.app_name
 }
 
 module "sg" {
   source = "./modules/sg"
 
-  vpc_id   = local.vpc_id
+  vpc_id   = module.vpc.vpc_id
   app_name = local.app_name
   tags     = local.tags
+
+  depends_on = [
+    module.vpc
+  ]
 }
 
 module "alb" {
   source = "./modules/alb"
 
-  vpc_id   = local.vpc_id
+  vpc_id   = module.vpc.vpc_id
   app_name = local.app_name
 
   bucket_logs = local.bucket_logs
@@ -45,7 +55,8 @@ module "alb" {
   subnets           = local.subnets
 
   depends_on = [
-    module.sg
+    module.sg,
+    module.vpc
   ]
 }
 
@@ -62,13 +73,14 @@ module "ecs" {
   host_port             = local.service_port
   protocol              = local.protocol
   subnets               = local.subnets
-  vpc_id                = local.vpc_id
+  vpc_id                = module.vpc.vpc_id
   target_group_arn      = module.alb.target_group_arn
 
   security_group_id = module.sg.security_group_id
 
   depends_on = [
     module.sg,
-    module.alb
+    module.alb,
+    module.vpc
   ]
 }
